@@ -2,30 +2,33 @@
 
 pipeline {
     agent none
-    parameters{
-    choice(name: 'VERSION', choices: ['V1.0', 'V2.0', 'V3.0'], description: '')
-    booleanParam(name: 'executeTests', defaultValue: false, description: '')
+    tools{
+    maven 'maven-3.9.9'
     } 
     stages {
-        stage('build') {
+        stage('build jar') {
             steps {
+                script{
                     echo "Building the application..."
-            }
-        }
-        stage('test') {
-            when{
-               expression {
-               params.executeTests
+                    sh 'mvn package'
                 }
             }
+        }
+        stage('build image') {
             steps {
-                    echo "Testing the application..."
+                script{
+                    echo "Building the docker image..."
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS' usernameVariable: 'USER')]) {
+                    sh 'docker build -t ritucs/demo-project:V2.0 .'
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push ritucs/demo-project:V2.0'
+                    }
+                }
             }
         }
         stage('deploy') {
             steps {
                     echo "Deploying the application..."
-                    echo "deploying versions ${params.VERSION}"
             }
         }
     }
