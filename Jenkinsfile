@@ -56,7 +56,9 @@ pipeline {
                }
             }
             steps {
+                script{
                 gv.deploy()
+                }
             }
         }
     }
