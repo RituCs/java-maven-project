@@ -1,11 +1,18 @@
 #!/usr/bin/env groovy
-
+def gv
 pipeline {
     agent any
     tools{
     maven 'maven-3.9.9'
     } 
     stages {
+         stage('init') {
+            steps {
+                script{
+                   gv = load "script.groovy"
+                }
+            }
+        }
         stage('test') {
             when {
                expression {
@@ -14,8 +21,7 @@ pipeline {
             }
             steps {
                 script{
-                    echo "Testing the application..."
-                    sh 'mvn test'
+                   gv.testProject()
                 }
             }
         }
@@ -27,8 +33,7 @@ pipeline {
             }
             steps {
                 script{
-                    echo "Building the application..."
-                    sh 'mvn package'
+                   gv.buildJar()
                 }
             }
         }
@@ -40,11 +45,7 @@ pipeline {
             }
             steps {
                 script{
-                    echo "Building the docker image..."
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh 'docker build -t ritucs/demo-project:V2.0 .'
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
-                    sh 'docker push ritucs/demo-project:V2.0'
+                  gv.buildImage()
                     }
                 }
             }
@@ -56,8 +57,7 @@ pipeline {
                }
             }
             steps {
-                    echo "Deploying the application..."
-                    echo "Deploying the branch $BRANCH_NAME"
+                gv.deploy()
             }
         }
     }
