@@ -14,6 +14,7 @@ def buildImage(){
     sh 'docker build -t ritucs/demo-project:V2.0 .'
     sh 'echo $PASS | docker login -u $USER --password-stdin'
     sh 'docker push ritucs/demo-project:V2.0'
+    }
 }
 
 def deploy(){
