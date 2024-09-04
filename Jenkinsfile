@@ -6,7 +6,25 @@ pipeline {
     maven 'maven-3.9.9'
     } 
     stages {
+        stage('test') {
+            when {
+               expression {
+                BRANCH_NAME ==  "feature/add-tests"
+               }
+            }
+            steps {
+                script{
+                    echo "Testing the application..."
+                    sh 'mvn test'
+                }
+            }
+        }
         stage('build jar') {
+              when {
+               expression {
+                BRANCH_NAME ==  "main"
+               }
+            }
             steps {
                 script{
                     echo "Building the application..."
@@ -15,6 +33,11 @@ pipeline {
             }
         }
         stage('build image') {
+            when {
+               expression {
+                BRANCH_NAME ==  "main"
+               }
+            }
             steps {
                 script{
                     echo "Building the docker image..."
@@ -27,8 +50,14 @@ pipeline {
             }
         }
         stage('deploy') {
+            when {
+               expression {
+                BRANCH_NAME ==  "main"
+               }
+            }
             steps {
                     echo "Deploying the application..."
+                    echo "Deploying the branch $BRANCH_NAME"
             }
         }
     }
