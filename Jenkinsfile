@@ -31,7 +31,7 @@ pipeline {
         stage('build image') {
             steps {
                 script{
-                   buildImage()
+                   buildImage 'ritucs/demo-project:V4.0'
                     }
                 }
             }
