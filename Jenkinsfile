@@ -31,8 +31,9 @@ pipeline {
         stage('build and push image') {
             steps {
                 script{
-                   buildImage 'ritucs/demo-project:V7.0'
-                   dockerPush 'ritucs/demo-project:V7.0'
+                   buildImage 'ritucs/demo-project:V8.0'
+                   dockerLogin()
+                   dockerPush 'ritucs/demo-project:V8.0'
                     }
                 }
             }
